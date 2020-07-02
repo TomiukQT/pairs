@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public class OnTurn
+
 public class GameManager : MonoBehaviour
 {
     List<IPlayer> players;
