@@ -1,12 +1,19 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 
-public class OnTurn
+public class OnTurnStartEventArgs : EventArgs
+{
+    public string playerName;
+    public bool next = true;
+}
 
 public class GameManager : MonoBehaviour
 {
+    public event EventHandler<OnTurnStartEventArgs> OnTurnStart; 
+
     List<IPlayer> players;
 
 
@@ -35,7 +42,7 @@ public class GameManager : MonoBehaviour
     }
 
     private void AddPlayers()
-    {;
+    {
         Player p = Instantiate(new GameObject(), transform).AddComponent<Player>();
         p.Name = "Tomas";
         Player p2 = Instantiate(new GameObject(), transform).AddComponent<Player>();
@@ -44,6 +51,8 @@ public class GameManager : MonoBehaviour
         players.Add(p);
         players.Add(p2);
     }
+
+    public List<IPlayer> GetPlayers() => players;
 
     private void SubscribeToEvents()
     {
@@ -62,6 +71,7 @@ public class GameManager : MonoBehaviour
                 StartCoroutine(DestroyAllCards(turnedCards));
                 IPlayer player = (IPlayer)sender;
                 player.Score += 1;
+                OnTurnStart?.Invoke(this, new OnTurnStartEventArgs { playerName = players[currPlayer].Name, next = false });
             }
             else
             {
@@ -111,6 +121,8 @@ public class GameManager : MonoBehaviour
         currPlayer++;
         if (currPlayer >= 2)
             currPlayer = 0;
+        OnTurnStart?.Invoke(this, new OnTurnStartEventArgs { playerName = players[currPlayer].Name});
+
         players[currPlayer].StartTurn();
     }
         

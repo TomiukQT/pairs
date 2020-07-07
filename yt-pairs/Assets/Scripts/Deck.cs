@@ -11,6 +11,8 @@ public class Deck : MonoBehaviour
 
     [SerializeField]
     private GameObject cardPrefab;
+    [SerializeField]
+    private Transform cardParent;
 
     private void Awake()
     {
@@ -31,7 +33,7 @@ public class Deck : MonoBehaviour
         {
             for(int j = 0; j < 2; j++)
             {
-                GameObject c = Instantiate(cardPrefab);
+                GameObject c = Instantiate(cardPrefab,cardParent);
                 c.GetComponent<Card>().cardId = i;
                 c.GetComponent<Card>().foreImg = collection[i];
                 cards.Add(c);
