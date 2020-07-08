@@ -7,7 +7,10 @@ using UnityEngine.Experimental.AI;
 
 public class AIPlayer : MonoBehaviour, IPlayer
 {
-    private string _name = "AI_" + UnityEngine.Random.Range(150, 1000).ToString();
+    private const float TIME_BETWEEN_TURN = 1f;
+    private float currTimeBetweenTurn = 0f;
+
+    private string _name;
     private int _score = 0;
 
     public string Name { get => _name; set => _name = "AI_" + UnityEngine.Random.Range(150, 1000).ToString(); }
@@ -19,12 +22,16 @@ public class AIPlayer : MonoBehaviour, IPlayer
 
     private List<Card> memory;
     private List<Card> cardsToChoose;
+    private Card chosen;
 
     private Transform cardsParent;
 
     private void Awake()
     {
+        cardsToChoose = new List<Card>();
+        memory = new List<Card>();
         cardsParent = GameObject.Find("Cards").transform;
+        name= "AI_" + UnityEngine.Random.Range(150, 1000).ToString();
     }
 
     public void EndTurn()
@@ -35,8 +42,21 @@ public class AIPlayer : MonoBehaviour, IPlayer
     public void StartTurn()
     {
         isTurn = true;
-        while(isTurn)
-            OnCardSelect?.Invoke(this, new OnCardSelectEventArgs { selectedCard = ChooseCard() });
+        chosen = null;
+        currTimeBetweenTurn = 0f;
+        
+    }
+
+    private void Update()
+    {
+        if(isTurn && currTimeBetweenTurn >= TIME_BETWEEN_TURN)
+        {
+            Card choose = ChooseCard();
+            choose.FlipCard();
+            OnCardSelect?.Invoke(this, new OnCardSelectEventArgs { selectedCard = choose });
+            currTimeBetweenTurn = 0f;
+        }
+        currTimeBetweenTurn += Time.deltaTime;
     }
 
     private void UpdateCardsToChoose()
@@ -48,26 +68,43 @@ public class AIPlayer : MonoBehaviour, IPlayer
             if(t.TryGetComponent<Card>(out c))
                 cardsToChoose.Add(c);
         }
+        memory.RemoveAll(x => !cardsToChoose.Contains(x));
     }
 
     private Card ChooseCard()
     {
         UpdateCardsToChoose();
         int id;
+        Card pair;
         if (CheckMemory(out id))
         {
             Card c = memory.Find(x => x.cardId == id);
+            chosen = c;
             memory.Remove(c);
             return c;
         }
-        else if(true)
+        else if(chosen == null)
         {
-
+            chosen = ChooseRandomCard();
+            memory.Add(chosen);
+            return chosen; 
+        }
+        else if(chosen != null && CheckChosenWithMemory(out pair))
+        {
+            if (memory.Contains(chosen))
+                memory.Remove(chosen);
+            memory.Remove(pair);
+            return pair;
+        }
+        else
+        {
+            Card c2 = ChooseRandomCard();
+            memory.Add(c2);
+            return c2;
         }
         //Check if in memory arent 2 same cards.
         // then choose random card
         // at second turn, compare chosen card with memory.
-        return null;
     }
 
     private bool CheckMemory(out int id)
@@ -89,10 +126,27 @@ public class AIPlayer : MonoBehaviour, IPlayer
         return false;
     }
 
-    private void ChooseRandomCard()
+    private bool CheckChosenWithMemory(out Card pair)
+    {
+        int chosenId = chosen.cardId;
+        pair = null;
+        for (int i = 0; i < memory.Count; i++)
+        {
+            if(memory[i].cardId == chosenId && memory[i] != chosen)
+            {
+                pair = memory[i];
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Card ChooseRandomCard()
     {
         List<Card> cards = new List<Card>(cardsToChoose);
-        cards.RemoveAll(x => !memory.Contains(x));
+        cards.RemoveAll(x => memory.Contains(x));
+        int rng = UnityEngine.Random.Range(0,cards.Count);
+        return cards[rng];
     }
 
 }

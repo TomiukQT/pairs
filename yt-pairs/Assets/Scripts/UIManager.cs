@@ -31,6 +31,7 @@ public class UIManager : MonoBehaviour
     private void Subscribe()
     {
         gameManager.OnTurnStart += NewTurnAlert;
+        gameManager.OnGameEnd += GameEndAlert;
     }
 
     private void NewTurnAlert(object sender, OnTurnStartEventArgs e)
@@ -46,10 +47,28 @@ public class UIManager : MonoBehaviour
         StartCoroutine(ToggleAlertAfterTime(alertBox,1f));
     }
 
+    private void GameEndAlert(object sender, OnGameEndEventArgs e)
+    {
+        List<IPlayer> players = e.players;
+        players.Sort(delegate (IPlayer x, IPlayer y) { return x.Score.CompareTo(y.Score); });
+        players = players.FindAll(x => x.Score == players[0].Score);
+        if (players.Count > 1) // draw
+        {
+            alertText.text = "Its draw: ";
+            foreach (IPlayer p in players)
+                alertText.text += p.Name + ", ";
+        }
+        else
+            alertText.text = "Player " + players[0].Name + " won with score " + players[0].Score + "!";
+        ToggleUI(alertBox, true);
+        StartCoroutine(ToggleAlertAfterTime(alertBox, 1f)); 
+    }
+
+
     private void UpdateScore()
     {
         scoreText.text = "Score \n";
-        foreach (Player p in gameManager.GetPlayers())
+        foreach (IPlayer p in gameManager.GetPlayers())
         {
             scoreText.text += p.Name + ": " + p.Score + "\n";
         }
