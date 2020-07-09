@@ -34,6 +34,8 @@ public class Player : MonoBehaviour, IPlayer
         }
     }
 
+    public void Prepare() { }
+
     public void StartTurn() => isTurn = true;
 
     public void EndTurn() => isTurn = false;

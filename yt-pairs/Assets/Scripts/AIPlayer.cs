@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Unity.IO.LowLevel.Unsafe;
 using UnityEngine;
 using UnityEngine.Experimental.AI;
 
@@ -26,12 +27,12 @@ public class AIPlayer : MonoBehaviour, IPlayer
 
     private Transform cardsParent;
 
-    private void Awake()
+    public void Prepare()
     {
         cardsToChoose = new List<Card>();
         memory = new List<Card>();
         cardsParent = GameObject.Find("Cards").transform;
-        name= "AI_" + UnityEngine.Random.Range(150, 1000).ToString();
+        name = "AI_" + UnityEngine.Random.Range(150, 1000).ToString();
     }
 
     public void EndTurn()
@@ -148,5 +149,7 @@ public class AIPlayer : MonoBehaviour, IPlayer
         int rng = UnityEngine.Random.Range(0,cards.Count);
         return cards[rng];
     }
+
+    
 
 }

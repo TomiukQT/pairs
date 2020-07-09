@@ -33,6 +33,8 @@ public class GameManager : MonoBehaviour
 
     private int maxCardsTurned = 2;
 
+    private Transform playersParent;
+
     private void Awake()
     {
         Time.timeScale = 5f;
@@ -51,17 +53,21 @@ public class GameManager : MonoBehaviour
 
     private void AddPlayers()
     {
-       // Player p = Instantiate(new GameObject(), transform).AddComponent<Player>();
-       // p.Name = "Tomas";
+        foreach (IPlayer p in players)
+            p.Prepare();
+
+
+        // Player p = Instantiate(new GameObject(), transform).AddComponent<Player>();
+        // p.Name = "Tomas";
         //Player p2 = Instantiate(new GameObject(), transform).AddComponent<Player>();
         //p2.Name = "Tasd";
-        AIPlayer ai1 = Instantiate(new GameObject(), transform).AddComponent<AIPlayer>();
-        ai1.Name = "PC";
-        AIPlayer ai2 = Instantiate(new GameObject(), transform).AddComponent<AIPlayer>();
-        ai2.Name = "PC";
+        //AIPlayer ai1 = Instantiate(new GameObject(), transform).AddComponent<AIPlayer>();
+        //ai1.Name = "PC";
+        //AIPlayer ai2 = Instantiate(new GameObject(), transform).AddComponent<AIPlayer>();
+        //ai2.Name = "PC";
 
-        players.Add(ai2);
-        players.Add(ai1);
+        //players.Add(ai2);
+        //players.Add(ai1);
     }
 
     public List<IPlayer> GetPlayers() => players;

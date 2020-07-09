@@ -14,7 +14,7 @@ public interface IPlayer
 
     public event EventHandler<OnCardSelectEventArgs> OnCardSelect;
 
-
+    public void Prepare();
     public void StartTurn();
     public void EndTurn();
     public string Name { get; set; }
