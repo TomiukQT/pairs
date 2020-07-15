@@ -35,9 +35,12 @@ public class GameManager : MonoBehaviour
 
     private Transform playersParent;
 
+    [SerializeField]
+    private GameObject particleSystemFound;
+
     private void Awake()
     {
-        Time.timeScale = 5f;
+        //Time.timeScale = 5f;
         turnedCards = new List<Card>();
         players = PlayerSelect.Instance().players;
         AddPlayers();
@@ -54,20 +57,7 @@ public class GameManager : MonoBehaviour
     private void AddPlayers()
     {
         foreach (IPlayer p in players)
-            p.Prepare();
-
-
-        // Player p = Instantiate(new GameObject(), transform).AddComponent<Player>();
-        // p.Name = "Tomas";
-        //Player p2 = Instantiate(new GameObject(), transform).AddComponent<Player>();
-        //p2.Name = "Tasd";
-        //AIPlayer ai1 = Instantiate(new GameObject(), transform).AddComponent<AIPlayer>();
-        //ai1.Name = "PC";
-        //AIPlayer ai2 = Instantiate(new GameObject(), transform).AddComponent<AIPlayer>();
-        //ai2.Name = "PC";
-
-        //players.Add(ai2);
-        //players.Add(ai1);
+            p.Prepare();    
     }
 
     public List<IPlayer> GetPlayers() => players;
@@ -81,6 +71,9 @@ public class GameManager : MonoBehaviour
 
     private void AddCard(object sender, OnCardSelectEventArgs e)
     {
+        if (turnedCards.Count >= maxCardsTurned)
+            return;
+        e.selectedCard.FlipCard();
         turnedCards.Add(e.selectedCard);
         if (turnedCards.Count >= maxCardsTurned)
         {
@@ -108,13 +101,14 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator DestroyAllCards(List<Card> turnedCards)
     {
-        totalCards -= turnedCards.Count;
-        yield return new WaitForSeconds(.5f);
+        totalCards -= turnedCards.Count; 
+        yield return new WaitForSeconds(.3f);
         foreach (Card c in turnedCards)
-        {
-            
+            Instantiate(particleSystemFound, c.transform.position, Quaternion.Euler(90, 0, 0));
+        yield return new WaitForSeconds(.5f);    
+        foreach (Card c in turnedCards)
             Destroy(c.gameObject);
-        }
+        
         turnedCards.Clear();
        
     }

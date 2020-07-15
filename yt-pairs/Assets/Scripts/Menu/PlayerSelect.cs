@@ -49,6 +49,24 @@ public class PlayerSelect : MonoBehaviour
             player = Instantiate(new GameObject(), transform).AddComponent<Player>();
         else if (playerType == PlayerType.AI)
             player = Instantiate(new GameObject(), transform).AddComponent<AIPlayer>();
+        else if(playerType == PlayerType.EASYAI)
+        {
+            player = Instantiate(new GameObject(), transform).AddComponent<AIPlayer>();
+            AIPlayer ai = (AIPlayer)player;
+            ai.SetMemory(new Memory(5, .8f));    
+        }
+        else if (playerType == PlayerType.MEDIUMAI)
+        {
+            player = Instantiate(new GameObject(), transform).AddComponent<AIPlayer>();
+            AIPlayer ai = (AIPlayer)player;
+            ai.SetMemory(new Memory(8, .9f));
+        }
+        else if (playerType == PlayerType.HARDAI)
+        {
+            player = Instantiate(new GameObject(), transform).AddComponent<AIPlayer>();
+            AIPlayer ai = (AIPlayer)player;
+            ai.SetMemory(new Memory(12, .95f));
+        }
         player.Name = name;
         players.Add(player);
     }

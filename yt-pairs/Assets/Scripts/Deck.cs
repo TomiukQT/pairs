@@ -23,7 +23,7 @@ public class Deck : MonoBehaviour
     private void Start()
     {
         CreateDeck();
-        ShuffleCards();
+       // ShuffleCards();
         DisplayCards();
     }
 

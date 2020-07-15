@@ -4,12 +4,12 @@ using UnityEngine;
 using TMPro;
 
 public enum PlayerType
-{ PLAYER, AI }
+{ PLAYER,EASYAI, MEDIUMAI, HARDAI, AI }
 
 public class PlayerTypeSelect : MonoBehaviour
 {
     private PlayerType playerType;
-    private const int MAX_PLAYER_TYPE = 1;
+    private const int MAX_PLAYER_TYPE = 3;
 
     [SerializeField]
     private TextMeshProUGUI playerTypeText;
@@ -41,7 +41,8 @@ public class PlayerTypeSelect : MonoBehaviour
 
     private string PlayerTypeToString(PlayerType playerType)
     {
-        return playerType == PlayerType.PLAYER ? "Player" : "AI";
+        return playerType == PlayerType.PLAYER ? "Player" : playerType == PlayerType.AI ? "AI" : playerType == PlayerType.EASYAI ? "Easy AI" : 
+            playerType == PlayerType.MEDIUMAI ? "Medium AI" : playerType == PlayerType.HARDAI ? "Hard AI" : "None";
     }
 
     //public static PlayerType StringToPlayerType(string s)

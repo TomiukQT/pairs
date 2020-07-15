@@ -21,7 +21,8 @@ public class AIPlayer : MonoBehaviour, IPlayer
 
     private bool isTurn = false;
 
-    private List<Card> memory;
+    private Memory memory;
+
     private List<Card> cardsToChoose;
     private Card chosen;
 
@@ -30,10 +31,12 @@ public class AIPlayer : MonoBehaviour, IPlayer
     public void Prepare()
     {
         cardsToChoose = new List<Card>();
-        memory = new List<Card>();
         cardsParent = GameObject.Find("Cards").transform;
-        name = "AI_" + UnityEngine.Random.Range(150, 1000).ToString();
+        _name = "AI_" + UnityEngine.Random.Range(150, 1000).ToString();
     }
+
+    public void SetMemory(Memory _memory) => memory = _memory;
+
 
     public void EndTurn()
     {
@@ -53,7 +56,7 @@ public class AIPlayer : MonoBehaviour, IPlayer
         if(isTurn && currTimeBetweenTurn >= TIME_BETWEEN_TURN)
         {
             Card choose = ChooseCard();
-            choose.FlipCard();
+            //choose.FlipCard();
             OnCardSelect?.Invoke(this, new OnCardSelectEventArgs { selectedCard = choose });
             currTimeBetweenTurn = 0f;
         }
@@ -69,7 +72,7 @@ public class AIPlayer : MonoBehaviour, IPlayer
             if(t.TryGetComponent<Card>(out c))
                 cardsToChoose.Add(c);
         }
-        memory.RemoveAll(x => !cardsToChoose.Contains(x));
+        memory.GetMemory().RemoveAll(x => !cardsToChoose.Contains(x));
     }
 
     private Card ChooseCard()
@@ -79,7 +82,7 @@ public class AIPlayer : MonoBehaviour, IPlayer
         Card pair;
         if (CheckMemory(out id))
         {
-            Card c = memory.Find(x => x.cardId == id);
+            Card c = memory.GetMemory().Find(x => x.cardId == id);
             chosen = c;
             memory.Remove(c);
             return c;
@@ -112,7 +115,7 @@ public class AIPlayer : MonoBehaviour, IPlayer
     {
         Dictionary<int, Card> memCheck = new Dictionary<int, Card>();
         id = -1;
-        foreach (Card c in memory)
+        foreach (Card c in memory.GetMemory())
         {
             if (memCheck.ContainsKey(c.cardId)) // 2 same cards in memory
             {
@@ -131,11 +134,11 @@ public class AIPlayer : MonoBehaviour, IPlayer
     {
         int chosenId = chosen.cardId;
         pair = null;
-        for (int i = 0; i < memory.Count; i++)
+        for (int i = 0; i < memory.GetMemory().Count; i++)
         {
-            if(memory[i].cardId == chosenId && memory[i] != chosen)
+            if(memory.GetMemory()[i].cardId == chosenId && memory.GetMemory()[i] != chosen)
             {
-                pair = memory[i];
+                pair = memory.GetMemory()[i];
                 return true;
             }
         }

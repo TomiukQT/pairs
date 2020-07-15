@@ -50,7 +50,7 @@ public class Player : MonoBehaviour, IPlayer
             if (card != null && !card.isFlipped)
             {
                 OnCardSelect?.Invoke(this, new OnCardSelectEventArgs { selectedCard = card });
-                card.FlipCard();
+                //card.FlipCard();
             }
         }
         return;
